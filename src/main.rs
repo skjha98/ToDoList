@@ -22,11 +22,7 @@ impl GlobalStore {
                 self.list.push(x);
                 println!("Item added");
             },
-            Command::List => {
-                for (i, item) in self.list.iter().enumerate() {
-                    println!("{}: {}", i, item);
-                }
-            }
+            Command::List => self.display_list(),
             Command::Remove(x) => {
                 if self.list.len() <= x {
                     eprintln!("index out of range!");
@@ -37,6 +33,16 @@ impl GlobalStore {
                 }
             },
             Command::Quit => {}
+        }
+    }
+    fn display_list(&self) {
+        if self.list.is_empty() {
+            println!("No item in the list");
+        }
+        else {
+            for (i, item) in self.list.iter().enumerate() {
+                println!("{}: {}", i, item);
+            }
         }
     }
 }
@@ -66,7 +72,7 @@ fn main() {
 }
 
 fn process_input(input: &str) -> Result<Command, String> {
-    let (cmd, arg) = input.split_once(' ').unwrap_or((input.trim(), ""));
+    let (cmd, arg) = input.trim().split_once(' ').unwrap_or((input.trim(), ""));
     let arg = arg.trim();
 
     match cmd.to_ascii_lowercase().as_str() {
@@ -84,7 +90,7 @@ fn process_input(input: &str) -> Result<Command, String> {
         }
 
         "remove" => {
-            arg.parse().map(Command::Remove).map_err(|e| format!("invalid argement: {}\n> remove <index of item to remove>", e))
+            arg.parse().map(Command::Remove).map_err(|e| format!("invalid argument: {}\n> remove <index>", e))
         }
 
         _ => {
